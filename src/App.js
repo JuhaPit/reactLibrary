@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 
+var libraries = [];
+
 
 class App extends Component {
     
@@ -10,9 +12,6 @@ class App extends Component {
     this.fetchLibraries = this.fetchLibraries.bind(this);
     this.state = {
         city: '',
-        name: '',
-        www: '',
-        libraries: [],
     };
   }
 
@@ -26,7 +25,7 @@ class App extends Component {
     <input type="text" value={this.state.value} onChange={this.handleChange}/>
     <button onClick={this.fetchLibraries}>Hae kirjastot</button>
       <div>
-        <LibraryTable data={this.state.libraries}/>
+        <LibraryTable data={libraries}/>
       </div>
     </div>
     );
@@ -34,25 +33,23 @@ class App extends Component {
     
 fetchLibraries() {
   console.log('fetching...');
-  fetch('https://api.kirjastot.fi/v3/organisation?city.name=LAHTI')
+  fetch('https://api.kirjastot.fi/v3/organisation?city.name=' + this.state.city)
     .then(result => result.json())
     .then(result => {
       
-      for(var i = 0; i < result.length; i++){
-          
-          this.setState({name: result.items[i].name.fi});
-          this.setState({www: result.items[i].web_library});
-          
-          var newArray = this.state.libraries.slice();
-          newArray.push('name: ' + this.state.name + ", www: " + this.state.www);
-          this.setState({libraries:newArray})
+      libraries = [];
+      
+      for(var i = 0; i < result.total; i++){
+        
+          libraries.push({name: result.items[i].name.fi, www: result.items[i].homepage.fi});
           
       }
-                  
+      
+      this.setState({asd : "asd"});
+      
+                 
       }
   );
-
-  console.log(this.state.libraries);
 }
 }
 
@@ -82,8 +79,8 @@ class Library extends Component {
   render() {
     return (
       <tr>
-        <td>{this.props.item[0].name.fi}</td>
-        <td>{this.props.item[0].www.fi}</td>
+        <td>{this.props.item.name}</td>
+        <td>{this.props.item.www}</td>
       </tr>);
   }
 }
